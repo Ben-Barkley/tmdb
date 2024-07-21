@@ -1,15 +1,17 @@
+//
+
 import React, { useEffect, useRef, useState } from "react";
-import SwiperCore, { Autoplay } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+// import "swiper/swiper-bundle.min.css"; // or 'swiper/swiper.min.css'
 import "./heroslide.css";
 import tmdbApi, { category, movieType } from "../../api/tmdbApi";
 import apiConfig from "../../api/ApiConfig";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Button, { OutlineButton } from "../button/Button";
 import Modal, { ModalContent } from "../modal/Modal";
 
 const HeroSlide = () => {
-  SwiperCore.use([Autoplay]);
   const [movieItems, setMovieItems] = useState([]);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ const HeroSlide = () => {
         grabCursor={true}
         spaceBetween={0}
         slidesPerView={1}
-        autoplay={{delay: 4000}}
+        autoplay={{ delay: 4000 }}
       >
         {movieItems.map((item, i) => (
           <SwiperSlide key={i}>
@@ -56,28 +58,29 @@ const HeroSlide = () => {
 };
 
 const HeroSlideItem = (props) => {
-  let hisrory = useHistory();
+  const navigate = useNavigate();
   const item = props.item;
 
   const background = apiConfig.originalImage(
     item.backdrop_path ? item.backdrop_path : item.poster_path
   );
 
-  
   const setModalActive = async () => {
     const modal = document.querySelector(`#modal_${item.id}`);
 
     const videos = await tmdbApi.getVideos(category.movie, item.id);
 
     if (videos.results.length > 0) {
-        const videSrc = 'https://www.youtube.com/embed/' + videos.results[0].key;
-        modal.querySelector('.modal__content > iframe').setAttribute('src', videSrc);
+      const videoSrc = "https://www.youtube.com/embed/" + videos.results[0].key;
+      modal
+        .querySelector(".modal__content > iframe")
+        .setAttribute("src", videoSrc);
     } else {
-        modal.querySelector('.modal__content').innerHTML = 'No trailer';
+      modal.querySelector(".modal__content").innerHTML = "No trailer";
     }
 
-    modal.classList.toggle('active');
-}
+    modal.classList.toggle("active");
+  };
 
   return (
     <div
@@ -90,12 +93,12 @@ const HeroSlideItem = (props) => {
           <div className="overview">{item.overview}</div>
           <div className="btns">
             <Button
-              onClick={() => hisrory.push("/movie/" + item.id)}
+              onClick={() => navigate("/movie/" + item.id)}
               className="watch-btn"
             >
-              Watch Now <i class="bx bx-play-circle"></i>
+              Watch Now <i className="bx bx-play-circle"></i>
             </Button>
-            <OutlineButton  onClick={setModalActive}>
+            <OutlineButton onClick={setModalActive}>
               Watch trailer
             </OutlineButton>
           </div>
